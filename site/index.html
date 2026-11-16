@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>U.S. Economic Indicators Dashboard · FRED data, refreshed daily</title>
+  <meta name="description" content="Live dashboard of U.S. economic indicators from FRED: inflation, unemployment, payrolls, GDP, interest rates, the yield curve, and consumer sentiment, with Sahm-rule and yield-curve recession signals. Refreshed daily.">
+  <meta name="author" content="Kevin Fairley">
+  <meta name="theme-color" content="#1c1612" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#fbf6ef" media="(prefers-color-scheme: light)">
+  <meta property="og:title" content="U.S. Economic Indicators Dashboard">
+  <meta property="og:description" content="Inflation, jobs, GDP, rates, and recession signals from FRED, refreshed daily.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kfairy9999.github.io/us-economic-dashboard/">
+  <meta property="og:image" content="https://kfairy9999.github.io/us-economic-dashboard/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://kfairy9999.github.io/us-economic-dashboard/">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="data/summary.json" as="fetch" type="application/json" crossorigin>
+  <link rel="preload" href="fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/fraunces-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.className += ' js';
+      try {
+        var t = localStorage.getItem('theme');
+        if (t === 'light' || t === 'dark') d.setAttribute('data-theme', t);
+        var r = localStorage.getItem('econ-range');
+        if (r) d.setAttribute('data-range', r);
+      } catch (e) {}
+    })();
+  </script>
+  <script defer src="vendor/chart.umd.min.js"></script>
+  <script defer src="vendor/chartjs-adapter-date-fns.bundle.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="wrap nav">
+      <a class="brand" href="#top" aria-label="U.S. Economy dashboard, back to top">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16"/><path d="M12 44 L24 32 L33 38 L50 18"/><circle cx="50" cy="18" r="5"/></svg>
+        <span class="brand-name">U.S. Economy</span>
+      </a>
+      <nav class="nav-links" aria-label="Sections">
+        <a href="#indicators">Indicators</a>
+        <a href="#signals">Signals</a>
+        <a href="#charts">Charts</a>
+        <a href="#method">Method</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">
+        <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>
+        <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero wrap" id="top" aria-labelledby="title">
+      <p class="kicker"><span class="pulse" aria-hidden="true"></span> Live FRED data · refreshed daily</p>
+      <h1 id="title">The U.S. economy, <em>at a glance.</em></h1>
+      <p class="lede">Inflation, jobs, growth, rates, and the recession signals economists watch, from the St. Louis Fed’s FRED database, recomputed every morning.</p>
+      <p class="stamp" id="stamp" aria-live="polite"><span class="skel w-60"></span></p>
+    </section>
+
+    <section class="section wrap" id="indicators" aria-labelledby="kpi-title">
+      <header class="section-head">
+        <h2 id="kpi-title">Headline indicators</h2>
+        <p class="sub">Latest reading, change, and recent trend. Tap a card to jump to its chart.</p>
+      </header>
+      <div class="kpis" id="kpi-grid">
+        <div class="kpi skel-card"></div><div class="kpi skel-card"></div><div class="kpi skel-card"></div><div class="kpi skel-card"></div>
+        <div class="kpi skel-card"></div><div class="kpi skel-card"></div><div class="kpi skel-card"></div><div class="kpi skel-card"></div>
+      </div>
+    </section>
+
+    <section class="section wrap" id="signals" aria-labelledby="signals-title">
+      <header class="section-head">
+        <h2 id="signals-title">Recession &amp; policy signals</h2>
+        <p class="sub">Derived from the raw series. Method notes are at the bottom of the page.</p>
+      </header>
+      <div class="signals" id="signal-grid">
+        <article class="signal skel-card"></article><article class="signal skel-card"></article>
+        <article class="signal skel-card"></article><article class="signal skel-card"></article>
+      </div>
+    </section>
+
+    <section class="section wrap" id="charts" aria-labelledby="charts-title">
+      <header class="section-head">
+        <h2 id="charts-title">History</h2>
+        <p class="sub">Shaded bands mark NBER-dated U.S. recessions.</p>
+      </header>
+      <div class="rangebar" role="group" aria-label="Chart date range">
+        <button type="button" data-range="1">1Y</button>
+        <button type="button" data-range="5">5Y</button>
+        <button type="button" data-range="10">10Y</button>
+        <button type="button" data-range="0">Max</button>
+      </div>
+      <div class="charts" id="chart-grid"></div>
+    </section>
+
+    <section class="section wrap" id="inversions" aria-labelledby="inv-title" hidden>
+      <header class="section-head">
+        <h2 id="inv-title">Yield-curve inversions since 1976</h2>
+        <p class="sub">Spells of 30+ days with the 10-year yield below the 2-year, and the NBER recession that followed, if any.</p>
+      </header>
+      <div class="table-wrap"><table class="inv-table" id="inv-table"></table></div>
+    </section>
+
+    <section class="section wrap" id="method" aria-labelledby="method-title">
+      <header class="section-head">
+        <h2 id="method-title">Method &amp; data notes</h2>
+      </header>
+      <div class="method">
+        <details open>
+          <summary>Sahm rule recession indicator</summary>
+          <p>Three-month average of the unemployment rate minus its lowest three-month average over the previous 12 months. Since 1970, a reading of <strong>0.50 percentage points</strong> or more has occurred early in every U.S. recession (Claudia Sahm, 2019). Computed here from <code>UNRATE</code> in real time on the current vintage.</p>
+        </details>
+        <details>
+          <summary>Yield curve (10-year minus 2-year)</summary>
+          <p>Daily <code>DGS10</code> minus <code>DGS2</code> on matching dates. A negative spread (an inverted curve) has preceded each recession since the late 1970s, typically by 6 to 24 months. Inversion spells shorter than 30 calendar days are ignored in the table to filter noise.</p>
+        </details>
+        <details>
+          <summary>Inflation, growth, and jobs</summary>
+          <p><strong>Inflation</strong> is the 12-month percent change in CPI (<code>CPIAUCSL</code>) and core CPI excluding food and energy (<code>CPILFESL</code>); the card also shows core's 3-month annualized pace, which turns faster. <strong>Real GDP growth</strong> is the quarter-over-quarter change in <code>GDPC1</code> at a compound annual rate, the headline BEA convention. <strong>Job gains</strong> are the monthly change in nonfarm payrolls (<code>PAYEMS</code>), with a 3-month average to smooth revisions. The <strong>real policy rate</strong> is the effective fed funds rate minus core CPI inflation.</p>
+        </details>
+        <details>
+          <summary>Calendar alignment and missing releases</summary>
+          <p>Every lag is matched on the calendar, not by row position, so a skipped release can never cause a comparison against the wrong month. When a single base month is missing, it is interpolated log-linearly from its neighbours for growth-rate math only; the missing month itself stays blank.</p>
+          <ul class="notes" id="data-notes"></ul>
+        </details>
+        <details>
+          <summary>Pipeline</summary>
+          <p>A Python job (pandas, requests) pulls 11 FRED series every morning in GitHub Actions, derives the metrics above, and writes two compact JSON files: a small summary that paints this page first, and the full histories behind the charts. Pure transforms are unit-tested with pytest. Older daily Treasury data is thinned to weekly to keep downloads small; the last two years stay daily.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap foot">
+      <p class="source">Source: <a href="https://fred.stlouisfed.org/" target="_blank" rel="noopener">FRED®, Federal Reserve Bank of St. Louis</a>. <span id="fred-notice">This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis.</span></p>
+      <p class="by">Built by <a href="https://kfairy9999.github.io/" target="_blank" rel="noopener">Kevin Fairley</a> · <a href="https://github.com/kfairy9999/us-economic-dashboard" target="_blank" rel="noopener">Source on GitHub</a> · Not financial advice.</p>
+    </div>
+  </footer>
+  <noscript><p class="noscript">This dashboard needs JavaScript to draw its charts. The raw data is at <a href="data/summary.json">data/summary.json</a>.</p></noscript>
+</body>
+</html>

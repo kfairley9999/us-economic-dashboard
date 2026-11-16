@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements-dev.txt
+      - name: Lint
+        run: |
+          ruff check .
+          ruff format --check .
+      - name: Unit tests
+        run: pytest
+      - name: Validate committed data snapshot
+        run: |
+          python - <<'PY'
+          import json
+          s = json.load(open("site/data/summary.json"))
+          d = json.load(open("site/data/series.json"))
+          assert s["schema"] == d["schema"] == 1
+          assert len(s["kpis"]) >= 8 and all(k["value"] is not None for k in s["kpis"])
+          assert all(len(c["t"]) == len(c["v"]) > 0 for c in d["series"].values())
+          print("snapshot ok:", s["generated_at"])
+          PY
+      - name: JavaScript syntax
+        run: node --check site/app.js
