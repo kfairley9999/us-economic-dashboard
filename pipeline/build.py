@@ -68,9 +68,9 @@ def derive(raw: dict[str, pd.Series]) -> dict[str, pd.Series]:
 SERIES_FMT: dict[str, tuple[str, int]] = {
     "unrate": ("M", 1),
     "sahm": ("M", 3),
-    "cpi_yoy": ("M", 3),
-    "core_yoy": ("M", 3),
-    "core_3m_ann": ("M", 3),
+    "cpi_yoy": ("M", 4),
+    "core_yoy": ("M", 4),
+    "core_3m_ann": ("M", 4),
     "fedfunds": ("M", 2),
     "dgs10": ("D", 2),
     "dgs2": ("D", 2),
