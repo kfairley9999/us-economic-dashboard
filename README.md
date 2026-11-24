@@ -2,10 +2,10 @@
 
 A daily-refreshed, mobile-first dashboard of the U.S. economy built on the St. Louis Fed's **FRED** API: inflation, jobs, growth, interest rates, the yield curve, and consumer sentiment, plus derived recession signals (the **Sahm rule** and **yield-curve inversion** history).
 
-**Live demo:** https://kfairy9999.github.io/us-economic-dashboard/
+**Live demo:** https://kfairley9999.github.io/us-economic-dashboard/
 
-[![CI](https://github.com/kfairy9999/us-economic-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/kfairy9999/us-economic-dashboard/actions/workflows/ci.yml)
-[![Refresh data & deploy](https://github.com/kfairy9999/us-economic-dashboard/actions/workflows/pages.yml/badge.svg)](https://github.com/kfairy9999/us-economic-dashboard/actions/workflows/pages.yml)
+[![CI](https://github.com/kfairley9999/us-economic-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/kfairley9999/us-economic-dashboard/actions/workflows/ci.yml)
+[![Refresh data & deploy](https://github.com/kfairley9999/us-economic-dashboard/actions/workflows/pages.yml/badge.svg)](https://github.com/kfairley9999/us-economic-dashboard/actions/workflows/pages.yml)
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 
 <p>
@@ -79,7 +79,7 @@ All values come from FRED's current data vintage. Historical readings of revised
 ## Run it locally
 
 ```bash
-git clone https://github.com/kfairy9999/us-economic-dashboard.git
+git clone https://github.com/kfairley9999/us-economic-dashboard.git
 cd us-economic-dashboard
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements-dev.txt
